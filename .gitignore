@@ -42,3 +42,4 @@ lerna-debug.log*
 !.env.example_docker
 !.env.prod
 !.env.dev
+package-lock.json
