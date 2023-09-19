@@ -23,6 +23,11 @@ export class ProductController {
     return await this.productService.findAll();
   }
 
+  @Get('/cart')
+  async getProductInCart() {
+    return await this.productService.getProductInCart();
+  }
+
   @Patch('/add')
   @HttpCode(200)
   async addProductToCart(@Body() addProductDto: AddProductDto) {

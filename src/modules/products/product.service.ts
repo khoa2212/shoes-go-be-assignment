@@ -20,6 +20,10 @@ export class ProductService {
     return await this.productRepository.findAll();
   }
 
+  async getProductInCart() {
+    return await this.productRepository.findAll({ where: { inCart: true } });
+  }
+
   async addProductToCart(addProductDto: AddProductDto) {
     const product = await this.productRepository.findByPk(addProductDto.id);
     if (!product) {
@@ -78,22 +82,35 @@ export class ProductService {
     if (changeQuanityDto.option) {
       // true thi cong len
       c = c + 1;
-    } else { // false thi giam xuong
+    } else {
+      // false thi giam xuong
       c = c - 1;
     }
 
     try {
-      const [row] = await this.productRepository.update(
-        {
-          count: c,
-          updatedAt: new Date(),
-        },
-        {
-          where: { id: product.id },
-        },
-      );
-
-      if (row > 0) return { success: true };
+      if (c == 0) {
+        const [row] = await this.productRepository.update(
+          {
+            inCart: false,
+            updatedAt: new Date(),
+          },
+          {
+            where: { id: product.id },
+          },
+        );
+        if (row > 0) return { success: true };
+      } else {
+        const [row] = await this.productRepository.update(
+          {
+            count: c,
+            updatedAt: new Date(),
+          },
+          {
+            where: { id: product.id },
+          },
+        );
+        if (row > 0) return { success: true };
+      }
     } catch (err) {
       console.log(err?.message || err?.response.code || err);
       throw new InternalServerError(err?.message || err?.response.code || err);
